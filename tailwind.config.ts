@@ -11,6 +11,10 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        customBorderColor: '#0B0C21',
+        whiteTitle: '#EBEBF5',
+        whiteSubTitle: '#535466',
+        customCyen: '#1BD2DA'
       },
     },
   },
