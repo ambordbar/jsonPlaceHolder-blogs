@@ -19,20 +19,7 @@ const filePath = path.join(process.cwd(), "localData", "postData.json");
 
 export async function fetchPostsAndUsers(): Promise<Post[]> {
     try {
-        let localPosts: Post[] = [];
-        try {
-            const fileData = await fs.readFile(filePath, "utf-8");
-
-            if (fileData.trim().length > 0) {
-                localPosts = JSON.parse(fileData);
-            } else {
-                console.warn("Warning: postData.json is empty. Using default value.");
-                localPosts = [];
-            }
-        } catch (readError) {
-            console.error("Error reading JSON file:", readError);
-            localPosts = [];
-        }
+        let localPosts: Post[] = await newFunction();
 
         const [postsRes, usersRes] = await Promise.all([
             fetch("https://jsonplaceholder.typicode.com/posts", {
@@ -61,3 +48,27 @@ export async function fetchPostsAndUsers(): Promise<Post[]> {
         return [];
     }
 }
+
+async function newFunction() {
+    return newFunctionFile();
+}
+
+
+async function newFunctionFile() {
+    let localPosts: Post[] = [];
+    try {
+        const fileData = await fs.readFile(filePath, "utf-8");
+
+        if (fileData.trim().length > 0) {
+            localPosts = JSON.parse(fileData);
+        } else {
+            console.warn("Warning: postData.json is empty. Using default value.");
+            localPosts = [];
+        }
+    } catch (readError) {
+        console.error("Error reading JSON file:", readError);
+        localPosts = [];
+    }
+    return localPosts;
+}
+

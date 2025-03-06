@@ -74,7 +74,7 @@ export default function LoginPage() {
                     <div className="flex justify-end">
                         <button
                             type="submit"
-                            className="bg-green-800 mx-auto w-full mt-5 px-4 py-2 text-white rounded-md"
+                            className="bg-pink-500 mx-auto w-full mt-5 px-4 py-2 text-white rounded-md"
                         >
                             Submit
                         </button>

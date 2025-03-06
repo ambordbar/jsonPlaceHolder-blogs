@@ -32,7 +32,7 @@ export default function Dashboard() {
         setLoading(true);
         try {
             const response = await createPost(postData);
-
+            console.log(postData)
             if (response) {
                 await saveJasonPost(postData);
                 router.replace(`/resultPage?message=Post%20created%20successfully!`);
@@ -48,10 +48,14 @@ export default function Dashboard() {
 
 
     return (
-        <div className="text-black xs:mx:6 sm:mx-4 md:mx-12 lg:mx-24 xl:mx-32 2xl:mx-40">
+        <div className="flex flex-col items-center text-black xs:mx-6 sm:mx-4 md:mx-12 lg:mx-24 xl:mx-32 2xl:mx-40">
             {loading && <Loader size={50} />}
-            <h1 className="text-center text-4xl font-bold text-gray-600">Welcome to dashboard</h1>
-            <Buttons className="p-4 rounded-lg hover:shadow-xl w-full mt-10 transition-shadow duration-300" label={'Add'} onClick={handleAddButton} />
+            <h1 className="text-center text-4xl font-bold text-gray-200">Welcome to dashboard</h1>
+            <Buttons
+                className="p-4 rounded-lg shadow-md shadow-pink-500 border-b-4 hover:shadow-2xl hover:border-b-pink-500 transition-shadow font-semibold text-whiteTitle w-36 h-36 mt-10 duration-500"
+                label={'Add'}
+                onClick={handleAddButton}
+            />
             <Modal
                 isOpen={showAdd}
                 formName="Add Article"

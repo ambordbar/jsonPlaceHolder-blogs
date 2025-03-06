@@ -1,10 +1,7 @@
 'use client'
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState } from "react";
-import Buttons from './buttons';
-import HeartStroke from '../../../public/svg/heart-stroke.svg'
-import HeartFill from '../../../public/svg/favourite.svg'
-import ArrowRight from '../../../public/svg/arrow-right.svg'
 import Pencil from '../../../public/svg/writer.svg'
 import { useRouter } from 'next/navigation';
 
@@ -23,6 +20,7 @@ export default function Card({ indexCard, title, body, userName, className }: Ca
     //     items.reduce((acc, _, index) => ({ ...acc, [index]: 0 }), {})
     // );
     const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
+    const [hovered, setHovered] = useState(false);
 
     const toggleLike = (indexCard: number) => {
         setLikedPosts(prev => ({
@@ -42,7 +40,7 @@ export default function Card({ indexCard, title, body, userName, className }: Ca
     };
 
     return (
-        <div onClick={handleArrowClick} className={`rounded-3xl py-10 px-4 w-full  hover:bg-customBorderColor cursor-pointer transition-colors  duration-700`}>
+        <div onClick={handleArrowClick} className={`rounded-3xl py-10 px-4 w-full hover:bg-customBorderColor cursor-pointer transition-colors  duration-500`}>
             {/* <div className="relative">
                 <div className='absolute top-2 right-2'>
                     <Buttons label={
@@ -65,10 +63,10 @@ export default function Card({ indexCard, title, body, userName, className }: Ca
                         {title.split(" ").slice(0, 2).join(" ")}
                     </div>
 
-                    <div className="font-thin text-whiteSubTitle mt-1 text-md max-w-[360px] overflow-hidden text-ellipsis -webkit-box" style={{ WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', display: '-webkit-box' }}>
+                    <div className="font-medium text-whiteSubTitle mt-1 text-md max-w-[360px] overflow-hidden text-ellipsis -webkit-box" style={{ WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', display: '-webkit-box' }}>
                         {body}
                     </div>
-                    <div className="flex pt-5 text-gray-500">
+                    <div className="flex pt-5 text-sm items-center text-gray-400">
                         <Image src={Pencil} alt="arrow" width={24} height={24} className='me-1 text-customCyen opacity-50' />
                         {userName}
                     </div>

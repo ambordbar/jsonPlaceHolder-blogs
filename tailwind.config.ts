@@ -16,6 +16,9 @@ export default {
         whiteSubTitle: '#535466',
         customCyen: '#1BD2DA'
       },
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+      },
     },
   },
   plugins: [],

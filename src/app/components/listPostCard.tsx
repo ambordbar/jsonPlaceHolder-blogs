@@ -5,7 +5,7 @@ export default async function listPost() {
 
     const data = await fetchPostsAndUsers();
 
-    const lastTenPosts = data.reverse().slice(0, 10);
+    const lastTenPosts = data.reverse().slice(0, 12);
 
     return (
         <div className="w-full">

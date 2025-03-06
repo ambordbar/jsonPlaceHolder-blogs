@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fontsource/poppins": "^5.2.5",
     "framer-motion": "^12.4.10",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.477.0",
