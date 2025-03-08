@@ -40,7 +40,7 @@ export default function Card({ indexCard, title, body, userName, className }: Ca
     };
 
     return (
-        <div onClick={handleArrowClick} className={`rounded-3xl py-10 px-4 w-full hover:bg-customBorderColor cursor-pointer transition-colors  duration-500`}>
+        <div onClick={handleArrowClick} className={`rounded-3xl py-10 border border-gray-900 px-4 w-full hover:bg-customBorderColor hover:border-gray- cursor-pointer transition-colors  duration-500`}>
             {/* <div className="relative">
                 <div className='absolute top-2 right-2'>
                     <Buttons label={
@@ -72,13 +72,6 @@ export default function Card({ indexCard, title, body, userName, className }: Ca
                     </div>
                 </div>
                 <div className="">
-                    {/* <div className="absolute bottom-2 right-2 ">
-                        <Buttons
-                            label={<Image src={ArrowRight} alt="arrow" width={24} height={24} className='transition-all duration-500 transform scale-100 hover:scale-110' />}
-                            onClick={handleArrowClick}
-                            className='transition-all duration-500 transform hover:bg-gray-700'
-                        />
-                    </div> */}
                 </div>
             </div>
         </div>

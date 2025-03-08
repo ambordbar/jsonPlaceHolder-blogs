@@ -52,7 +52,7 @@ export default function Dashboard() {
             {loading && <Loader size={50} />}
             <h1 className="text-center text-4xl font-bold text-gray-200">Welcome to dashboard</h1>
             <Buttons
-                className="p-4 rounded-lg shadow-md shadow-pink-500 border-b-4 hover:shadow-2xl hover:border-b-pink-500 transition-shadow font-semibold text-whiteTitle w-36 h-36 mt-10 duration-500"
+                className="p-4 rounded-lg shadow-2xl shadow-pink-500 border-b-4 hover:shadow-xl hover:border-pink-500 hover:text-pink-500 transition-shadow font-semibold text-whiteTitle w-36 h-36 mt-10 duration-700"
                 label={'Add'}
                 onClick={handleAddButton}
             />
