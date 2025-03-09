@@ -6,12 +6,13 @@ interface Params {
     id: string
 }
 
-interface pageProps {
-    params: Promise<Params>;
+interface PageProps {
+    params: Promise<Params>
 }
 
-export default async function SinglePostPage({ params }: pageProps) {
-    const { id } = await params;
+export default async function SinglePostPage({ params }: PageProps) {
+    const { id } =await params;
+
     const singlePost = await fetchSinglePostData(Number(id));
 
     if (!singlePost) {
@@ -30,16 +31,11 @@ export default async function SinglePostPage({ params }: pageProps) {
                 <div>
                     {singlePost.body.repeat(9)}
                 </div>
-
-                <div className='mt-16 sm:mt-20 md:mt-24'>
-                    {singlePost.body.repeat(9)}
-                </div>
             </div>
 
             <div className='my-10 font-bold text-xl sm:text-2xl md:text-3xl'>
                 {singlePost.authorName}
             </div>
         </div>
-
     );
 }

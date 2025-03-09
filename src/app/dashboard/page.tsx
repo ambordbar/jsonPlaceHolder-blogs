@@ -32,7 +32,6 @@ export default function Dashboard() {
         setLoading(true);
         try {
             const response = await createPost(postData);
-            console.log(postData)
             if (response) {
                 await saveJasonPost(postData);
                 router.replace(`/resultPage?message=Post%20created%20successfully!`);

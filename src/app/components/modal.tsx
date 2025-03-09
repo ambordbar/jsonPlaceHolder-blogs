@@ -53,7 +53,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, formName, onClose, onSubmit, inpu
             <div className={`relative bg-white p-6 rounded-lg shadow-lg w-96 transform transition-all duration-300
             ${isVisible ? "scale-100 translate-y-0 opacity-100" : "scale-95 translate-y-4 opacity-0"}`}>
                 <div className="flex justify-between mb-4">
-                    <h2 className="text-lg font-bold ">{formName}</h2>
+                    <h2 className="text-lg font-bold text-customBorderColor">{formName}</h2>
                     <button onClick={onClose} className=" text-gray-500 hover:text-red-500">
                         <Image src={close} alt="Not Liked" width={14} height={14} className='transition-all duration-500 transform scale-100 hover:scale-110' />
                     </button>
@@ -73,7 +73,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, formName, onClose, onSubmit, inpu
 
                 <div className="flex justify-between mt-4">
                     <button
-                        className={`px-4 py-2 rounded text-white transition mx-auto w-full ${isFormValid ? "bg-blue-500 hover:bg-green-700" : "bg-gray-300 cursor-not-allowed"
+                        className={`px-4 py-2 rounded text-white transition mx-auto w-full ${isFormValid ? "bg-pink-500 hover:bg-customCyen duration-300" : "bg-gray-300 cursor-not-allowed"
                             }`}
                         onClick={handleSubmit}
                         disabled={!isFormValid}

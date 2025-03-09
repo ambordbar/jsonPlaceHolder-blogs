@@ -31,25 +31,25 @@ export default function Header() {
                     </div>
 
                     <nav className={`flex flex-1 justify-center ${isMenuOpen ? 'hidden' : 'hidden'} lg:flex`}>
-                        <ul className="flex space-x-8 text-gray-400 font-medium">
+                        <ul className="flex space-x-8 text-gray-200 font-medium">
                             <li>
-                                <Link href="/" className="hover:text-white duration-300">home</Link>
+                                <Link href="/" className="hover:text-pink-500 duration-300">home</Link>
                             </li>
                             <li>
-                                <Link href="/about" className="hover:text-white duration-300">about us</Link>
+                                <Link href="/about" className="hover:text-pink-500 duration-300">about us</Link>
                             </li>
                             <li>
-                                <Link href="/Posts" className="hover:text-white duration-300">posts</Link>
+                                <Link href="/Posts" className="hover:text-pink-500 duration-300">posts</Link>
                             </li>
                             <li>
-                                <Link href="/contact" className="hover:text-white duration-300">contact</Link>
+                                <Link href="/contact" className="hover:text-pink-500 duration-300">contact</Link>
                             </li>
                         </ul>
                     </nav>
                 </div>
                 <div className="hidden lg:flex space-x-4">
                     <Link href="/login">
-                        <button className="font-normal px-8 text-gray-100 py-3 rounded-md hover:text-customCyen duration-500">
+                        <button className="font-semibold px-8 text-gray-100 py-3 rounded-md hover:text-customCyen duration-500">
                             LOGIN
                         </button>
                     </Link>
@@ -64,10 +64,10 @@ export default function Header() {
             <AnimatePresence>
                 {isMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: -20 }}
+                        initial={{ opacity: 0, y: -100 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                        exit={{ opacity: 0, y: -100 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }}
                         className="lg:hidden w-full shadow-lg rounded-b-md z-50"
                     >
                         <ul className="flex flex-col items-center space-y-4 py-6 text-gray-400 font-medium">

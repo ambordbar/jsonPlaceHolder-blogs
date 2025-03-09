@@ -6,8 +6,7 @@ import Image from "next/image";
 import heroSectionImage from "../../../public/image/heroSectionImage.png"
 import ArrowRight from "../../../public/svg/arrow-right-1.svg"
 
-export default function heroSection() {
-
+export default function HeroSection() {
     const router = useRouter();
 
     return (

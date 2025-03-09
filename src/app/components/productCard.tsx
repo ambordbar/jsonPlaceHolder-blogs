@@ -1,7 +1,5 @@
 'use client'
-import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useState } from "react";
 import Pencil from '../../../public/svg/writer.svg'
 import { useRouter } from 'next/navigation';
 
@@ -13,26 +11,26 @@ interface CardProps {
     className?: string;
 }
 
-export default function Card({ indexCard, title, body, userName, className }: CardProps) {
+export default function Card({ indexCard, title, body, userName,  }: CardProps) {
     const router = useRouter();
 
     // const [likeCounts, setLikeCounts] = useState<{ [key: number]: number }>(
     //     items.reduce((acc, _, index) => ({ ...acc, [index]: 0 }), {})
     // );
-    const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
-    const [hovered, setHovered] = useState(false);
+    // const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
+    // const [hovered, setHovered] = useState(false);
 
-    const toggleLike = (indexCard: number) => {
-        setLikedPosts(prev => ({
-            ...prev,
-            [indexCard]: !prev[indexCard]
-        }));
+    // const toggleLike = (indexCard: number) => {
+    //     setLikedPosts(prev => ({
+    //         ...prev,
+    //         [indexCard]: !prev[indexCard]
+    //     }));
 
-        // setLikeCounts(prev => ({
-        //     ...prev,
-        //     [indexCard]: likedPosts[indexCard] ? prev[indexCard] - 1 : prev[indexCard] + 1
-        // }));
-    };
+    //     // setLikeCounts(prev => ({
+    //     //     ...prev,
+    //     //     [indexCard]: likedPosts[indexCard] ? prev[indexCard] - 1 : prev[indexCard] + 1
+    //     // }));
+    // };
 
     const handleArrowClick = () => {
         const pagePath = '/Posts';
@@ -40,7 +38,9 @@ export default function Card({ indexCard, title, body, userName, className }: Ca
     };
 
     return (
-        <div onClick={handleArrowClick} className={`rounded-3xl py-10 border border-gray-900 px-4 w-full hover:bg-customBorderColor hover:border-gray- cursor-pointer transition-colors  duration-500`}>
+        <div
+            onClick={handleArrowClick}
+            className={`rounded-3xl py-10 border border-gray-900 px-4 w-full min-h-[230px] hover:bg-customBorderColor hover:border-gray- cursor-pointer transition-colors duration-500`}>
             {/* <div className="relative">
                 <div className='absolute top-2 right-2'>
                     <Buttons label={
@@ -70,8 +70,6 @@ export default function Card({ indexCard, title, body, userName, className }: Ca
                         <Image src={Pencil} alt="arrow" width={24} height={24} className='me-1 text-customCyen opacity-50' />
                         {userName}
                     </div>
-                </div>
-                <div className="">
                 </div>
             </div>
         </div>

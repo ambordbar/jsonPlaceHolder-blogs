@@ -1,4 +1,5 @@
 "use server";
+
 interface User {
     id: number;
     name: string;
@@ -22,7 +23,7 @@ interface Post {
     authorPhone?: string;
 }
 
-export async function fetchSinglePostData(postId: number): Promise<Post> {
+export async function fetchSinglePostData(postId: number): Promise<Post | null> {
     try {
         const postRes = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`, {
             next: { tags: ["posts2"] },
@@ -30,6 +31,10 @@ export async function fetchSinglePostData(postId: number): Promise<Post> {
         });
 
         if (!postRes.ok) {
+            if (postRes.status === 404) {
+                console.warn(`Post with ID ${postId} not found.`);
+                return null;
+            }
             throw new Error("error to post data fetching");
         }
 
@@ -41,6 +46,10 @@ export async function fetchSinglePostData(postId: number): Promise<Post> {
         });
 
         if (!userRes.ok) {
+            if (userRes.status === 404) {
+                console.warn(`User for post ID ${postId} not found.`);
+                return null;
+            }
             throw new Error("error to user data fetching");
         }
 
@@ -54,10 +63,10 @@ export async function fetchSinglePostData(postId: number): Promise<Post> {
             authorPhone: user.phone,
         };
 
-        return postWithAuthor
+        return postWithAuthor;
 
     } catch (error) {
-        console.error(error);
-        throw new Error("error in fetching all data");
+        console.error("Error in fetching data:", error);
+        return null;
     }
 }
