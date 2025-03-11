@@ -1,4 +1,4 @@
-import Loader from '@/app/components/loader'
+import Loader from '@/app/components/dynamic-component/loader'
 
 
 const Loading = ({}) => {

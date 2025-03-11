@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import ResultComponenet from '../components/Resualt';
+import ResultComponenet from '../components/static-component/Resualt';
 
 export default function PageWrapper() {
     return (

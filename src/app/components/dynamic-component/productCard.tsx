@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image';
-import Pencil from '../../../public/svg/writer.svg'
+import Pencil from '../../../../public/svg/writer.svg'
 import { useRouter } from 'next/navigation';
 
 interface CardProps {
@@ -40,7 +40,7 @@ export default function Card({ indexCard, title, body, userName,  }: CardProps) 
     return (
         <div
             onClick={handleArrowClick}
-            className={`rounded-3xl py-10 border border-gray-900 px-4 w-full min-h-[230px] hover:bg-customBorderColor hover:border-gray- cursor-pointer transition-colors duration-500`}>
+            className={`rounded-3xl py-10 border border-gray-900 px-4 w-full min-h-[230px] hover:bg-customBorderColor hover:border-gray-700 cursor-pointer transition-colors duration-500`}>
             {/* <div className="relative">
                 <div className='absolute top-2 right-2'>
                     <Buttons label={
