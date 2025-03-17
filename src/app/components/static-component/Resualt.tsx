@@ -10,7 +10,7 @@ export default function ResultComponenet() {
   const searchParams = useSearchParams();
   const message = searchParams.get("message");
 
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -18,8 +18,8 @@ export default function ResultComponenet() {
     }, 1000);
 
     const redirectTimer = setTimeout(() => {
-      router.push("/");
-    }, 5000);
+      router.push("/dashboard");
+    }, 3000);
 
     return () => {
       clearInterval(timer);
@@ -28,7 +28,7 @@ export default function ResultComponenet() {
   }, [message, router]);
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center mt-5 mb-10">
       <div className="flex flex-col items-center gap-4 bg-white border border-gray-200 text-gray-500 shadow-md rounded-xl p-6">
         <Lottie
           animationData={successAnimation}

@@ -1,72 +1,41 @@
 "use server";
-
-interface User {
-    id: number;
-    name: string;
-    email: string;
-    address: Address;
-    phone: string;
-}
-
-interface Address {
-    city: string;
-}
+import fs from "fs/promises";
+import path from "path";
 
 interface Post {
-    userId: number;
-    id: number;
-    title: string;
-    body: string;
-    authorName?: string;
-    authorEmail?: string;
-    authorCity?: string;
-    authorPhone?: string;
+  userId: number;
+  id: number;
+  title: string;
+  body: string;
+  authorName?: string;
+  authorEmail?: string;
+  authorCity?: string;
+  authorPhone?: string;
 }
 
-export async function fetchSinglePostData(postId: number): Promise<Post | null> {
-    try {
-        const postRes = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`, {
-            next: { tags: ["posts2"] },
-            cache: "force-cache"
-        });
+export async function fetchSinglePostData(
+  postId: number
+): Promise<Post | null> {
+  try {
+    const filePath = path.join(process.cwd(), "localData", "posts.json");
+    const fileData = await fs.readFile(filePath, "utf-8");
 
-        if (!postRes.ok) {
-            if (postRes.status === 404) {
-                console.warn(`Post with ID ${postId} not found.`);
-                return null;
-            }
-            throw new Error("error to post data fetching");
-        }
-
-        const post: Post = await postRes.json();
-
-        const userRes = await fetch(`https://jsonplaceholder.typicode.com/users/${post.userId}`, {
-            next: { tags: ["users2"] },
-            cache: "force-cache"
-        });
-
-        if (!userRes.ok) {
-            if (userRes.status === 404) {
-                console.warn(`User for post ID ${postId} not found.`);
-                return null;
-            }
-            throw new Error("error to user data fetching");
-        }
-
-        const user: User = await userRes.json();
-
-        const postWithAuthor: Post = {
-            ...post,
-            authorName: user.name,
-            authorEmail: user.email,
-            authorCity: user.address.city,
-            authorPhone: user.phone,
-        };
-
-        return postWithAuthor;
-
-    } catch (error) {
-        console.error("Error in fetching data:", error);
-        return null;
+    if (fileData.trim() === "") {
+      console.warn("Local data file is empty");
+      return null;
     }
+
+    const posts: Post[] = JSON.parse(fileData);
+    const post = posts.find((p) => p.id === postId);
+
+    if (!post) {
+      console.warn(`Post with ID ${postId} not found in local data.`);
+      return null;
+    }
+
+    return post;
+  } catch (error) {
+    console.error("Error reading local data:", error);
+    return null;
+  }
 }

@@ -1,8 +1,5 @@
-import Loader from '@/app/components/dynamic-component/loader'
+import Loader from "@/app/components/ui/loader";
 
-
-const Loading = ({}) => {
-  return <Loader/>
+export default function Loading() {
+  return <Loader />;
 }
-
-export default Loading

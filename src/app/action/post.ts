@@ -15,6 +15,8 @@ interface Post {
   authorName?: string;
 }
 
+const filePath = path.join(process.cwd(), "localData", "posts.json");
+
 async function getLocalData() {
   let localPosts: Post[] = [];
   try {
@@ -37,17 +39,13 @@ async function cacheLocalData() {
   return getLocalData();
 }
 
-const filePath = path.join(process.cwd(), "localData", "postData.json");
-
 export async function fetchPostsAndUsers(): Promise<Post[]> {
   try {
     const localPosts: Post[] = await cacheLocalData();
 
     const [postsRes, usersRes] = await Promise.all([
-      fetch("https://jsonplaceholder.typicode.com/posts", {
-      }),
-      fetch("https://jsonplaceholder.typicode.com/users", {
-      }),
+      fetch("https://jsonplaceholder.typicode.com/posts", {}),
+      fetch("https://jsonplaceholder.typicode.com/users", {}),
     ]);
 
     if (!postsRes.ok || !usersRes.ok) {
@@ -59,10 +57,14 @@ export async function fetchPostsAndUsers(): Promise<Post[]> {
 
     const postsWithAuthors: Post[] = posts.map((post) => ({
       ...post,
-      authorName: users.find((user) => user.id === post.userId)?.name || "undefined name",
+      authorName:
+        users.find((user) => user.id === post.userId)?.name || "undefined name",
     }));
 
-    const allPosts = [...postsWithAuthors, ...localPosts];
+    const allPosts =
+      localPosts.length !== 0
+        ? [...postsWithAuthors, ...localPosts]
+        : [...localPosts, ...postsWithAuthors];
 
     return allPosts;
   } catch (error) {

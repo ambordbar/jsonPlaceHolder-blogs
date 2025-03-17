@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useReducer, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../../../public/image/logo.png";
@@ -7,42 +7,121 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import Menu from "../../../../public/svg/menu.svg";
 import LoginPage from "./login";
+import { useSession } from "next-auth/react";
+import { handleSignOut } from "../../action/auth";
+import Loader from "../ui/loader";
+
+type HeaderState = {
+  isMenuOpen: boolean;
+  isLoginOpen: boolean;
+  isDropdownOpen: boolean;
+};
+
+type HeaderAction =
+  | { type: "TOGGLE_MENU" }
+  | { type: "TOGGLE_LOGIN" }
+  | { type: "TOGGLE_DROPDOWN" }
+  | { type: "CLOSE_ALL" };
+
+function headerReducer(state: HeaderState, action: HeaderAction): HeaderState {
+  switch (action.type) {
+    case "TOGGLE_MENU":
+      return {
+        ...state,
+        isMenuOpen: !state.isMenuOpen,
+        isDropdownOpen: false,
+      };
+    case "TOGGLE_LOGIN":
+      return {
+        ...state,
+        isLoginOpen: !state.isLoginOpen,
+        isDropdownOpen: false,
+      };
+    case "TOGGLE_DROPDOWN":
+      return {
+        ...state,
+        isDropdownOpen: !state.isDropdownOpen,
+        isMenuOpen: false,
+      };
+    case "CLOSE_ALL":
+      return {
+        isMenuOpen: false,
+        isLoginOpen: false,
+        isDropdownOpen: false,
+      };
+    default:
+      return state;
+  }
+}
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
+  const [state, dispatch] = useReducer(headerReducer, {
+    isMenuOpen: false,
+    isLoginOpen: false,
+    isDropdownOpen: false,
+  });
 
+  const { data: session, status } = useSession();
   const pathname = usePathname();
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    dispatch({ type: "CLOSE_ALL" });
+  }, [pathname]);
+
+  if (!mounted) {
+    return (
+      <header className="relative rounded-2xl p-4 mt-5 mb-10 text-background backdrop-blur-none bg-white/5 border border-white/10 shadow-lg">
+        <div className="h-[60px] flex items-center justify-center">
+          <Loader />
+        </div>
+      </header>
+    );
+  }
 
   return (
-    <header className="relative mt-5 mb-10 text-background">
-      <div className="md:flex md:justify-between py-4 my-5 relative z-10">
+    <header className="relative rounded-2xl p-4 mt-5 mb-10 text-background backdrop-blur-none bg-white/5 border border-white/10 shadow-lg">
+      <div className="md:flex md:justify-between relative z-10">
         <div className="flex items-center gap-16">
           <Link href="/" className="">
-            <Image src={logo} alt="logo" className="" height={48} />
+            <Image
+              src={logo}
+              alt="logo"
+              onClick={() => dispatch({ type: "CLOSE_ALL" })}
+              className=""
+              height={48}
+            />
           </Link>
 
           <div className="flex  lg:hidden items-center ml-auto">
-            <button onClick={toggleMenu} className="">
+            <button
+              onClick={() => dispatch({ type: "TOGGLE_MENU" })}
+              className=""
+            >
               <Image src={Menu} alt="Menu" height={48} />
             </button>
           </div>
 
           <nav
-            className={`flex flex-1 justify-center ${isMenuOpen ? "hidden" : "hidden"} lg:flex`}
+            className={`flex flex-1 justify-center ${state.isMenuOpen ? "hidden" : "hidden"} lg:flex`}
           >
-            <ul className="flex font-semibold space-x-8 text-white">
+            <ul className="flex font-semibold space-x-8 text-gray-400">
               <li>
-                <Link href="/" className="hover:text-pink-500 duration-300">
+                <Link
+                  href="/"
+                  className={`hover:text-pink-500 duration-300 ${pathname === "/" ? "font-bold text-white" : "font-medium text-gray-100"}`}
+                >
                   home
                 </Link>
               </li>
               <li>
                 <Link
                   href="/about"
-                  className="hover:text-pink-500 duration-300"
+                  className={`hover:text-pink-500 duration-300 ${pathname === "/about" ? "font-bold text-white" : "font-medium text-gray-100"}`}
                 >
                   about us
                 </Link>
@@ -50,7 +129,7 @@ export default function Header() {
               <li>
                 <Link
                   href="/Posts"
-                  className="hover:text-pink-500 duration-300"
+                  className={`hover:text-pink-500 duration-300 ${pathname === "/Posts" ? "font-bold text-white" : "font-medium text-gray-100"}`}
                 >
                   posts
                 </Link>
@@ -58,7 +137,7 @@ export default function Header() {
               <li>
                 <Link
                   href="/contact"
-                  className="hover:text-pink-500 duration-300"
+                  className={`hover:text-pink-500 duration-300 ${pathname === "/contact" ? "font-bold text-white" : "font-medium text-gray-100"}`}
                 >
                   contact
                 </Link>
@@ -66,62 +145,152 @@ export default function Header() {
             </ul>
           </nav>
         </div>
-        <div className="hidden lg:flex space-x-4">
-          <button
-            onClick={() => setIsLoginOpen(true)}
-            className="font-semibold px-8 text-gray-100 py-3 rounded-md hover:text-customCyen duration-500"
-          >
-            LOGIN
-          </button>
-          <Link href="/dashboard">
-            <button className="bg-customCyen font-semibold px-8 py-3 rounded-md text-background hover:bg-gray-500 hover:text-white duration-700">
-              Dashboard
-            </button>
-          </Link>
+        <div className="hidden lg:flex space-x-4 items-center">
+          {status === "authenticated" && session?.user ? (
+            <div className="relative">
+              <button
+                onClick={() => dispatch({ type: "TOGGLE_DROPDOWN" })}
+                className="flex items-center space-x-2 text-gray-100 hover:text-pink-500 focus:outline-none"
+              >
+                <svg
+                  className={`w-4 h-4 transition-transform ${state.isDropdownOpen ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+                <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center font-semibold text-white">
+                  {session.user.name
+                    ? session.user.name[0].toUpperCase()
+                    : ":)"}
+                </div>
+              </button>
+
+              <AnimatePresence>
+                {state.isDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg py-1"
+                  >
+                    <div className="px-4 py-2 border-b">
+                      <p className="text-sm font-medium text-gray-900">
+                        {session.user.name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {session.user.email}
+                      </p>
+                    </div>
+                    <Link
+                      href="/dashboard"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-500"
+                      onClick={() => dispatch({ type: "CLOSE_ALL" })}
+                    >
+                      Dashboard
+                    </Link>
+                    <form action={handleSignOut}>
+                      <button
+                        type="submit"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-500"
+                        onClick={() => dispatch({ type: "CLOSE_ALL" })}
+                      >
+                        Sign out
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <div>
+              <button
+                onClick={() => dispatch({ type: "TOGGLE_LOGIN" })}
+                className="font-semibold px-8 text-gray-100 py-3 rounded-md hover:text-customCyen duration-500"
+              >
+                LOGIN
+              </button>
+
+              <Link href="/dashboard">
+                <button className="bg-customCyen font-semibold px-8 py-3 rounded-md text-background hover:bg-gray-500 hover:text-white duration-700">
+                  Add Post
+                </button>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
       <AnimatePresence>
-        {isMenuOpen && (
+        {state.isMenuOpen && (
           <motion.div
             initial={{ opacity: 0, y: -100 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -100 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             className="lg:hidden w-full shadow-lg rounded-b-md z-50"
           >
             <ul className="flex flex-col items-center space-y-4 py-6 text-gray-400 font-medium">
-              <li>
+              <li onClick={() => dispatch({ type: "TOGGLE_MENU" })}>
                 <Link href="/" className="hover:text-white duration-300">
                   home
                 </Link>
               </li>
-              <li>
+              <li onClick={() => dispatch({ type: "TOGGLE_MENU" })}>
                 <Link href="/about" className="hover:text-white duration-300">
                   about us
                 </Link>
               </li>
-              <li>
+              <li onClick={() => dispatch({ type: "TOGGLE_MENU" })}>
                 <Link href="/Posts" className="hover:text-white duration-300">
                   posts
                 </Link>
               </li>
-              <li>
+              <li onClick={() => dispatch({ type: "TOGGLE_MENU" })}>
                 <Link href="/contact" className="hover:text-white duration-300">
                   contact
                 </Link>
               </li>
-              <li>
-                <Link href="/login">
-                  <button className="font-normal px-8 text-gray-100 py-3 rounded-md hover:text-customCyen duration-500">
-                    LOGIN
-                  </button>
-                </Link>
-              </li>
-              <li>
+              {status === "authenticated" && session?.user ? (
+                <>
+                  <li onClick={() => dispatch({ type: "TOGGLE_MENU" })}>
+                    <Link
+                      href="/dashboard"
+                      className="hover:text-white duration-300"
+                    >
+                      Dashboard
+                    </Link>
+                  </li>
+                  <li onClick={() => dispatch({ type: "TOGGLE_MENU" })}>
+                    <form action={handleSignOut}>
+                      <button
+                        type="submit"
+                        className="text-gray-400 hover:text-white duration-300"
+                      >
+                        Sign out
+                      </button>
+                    </form>
+                  </li>
+                </>
+              ) : (
+                <li onClick={() => dispatch({ type: "TOGGLE_LOGIN" })}>
+                  <Link href="/">
+                    <button className="font-normal px-8 text-gray-100 py-3 rounded-md hover:text-customCyen duration-500">
+                      LOGIN
+                    </button>
+                  </Link>
+                </li>
+              )}
+              <li onClick={() => dispatch({ type: "TOGGLE_MENU" })}>
                 <Link href="/dashboard">
                   <button className="bg-customCyen font-semibold px-8 py-3 rounded-md text-background hover:bg-gray-500 hover:text-white duration-700">
-                    Dashboard
+                    Add Post
                   </button>
                 </Link>
               </li>
@@ -222,8 +391,11 @@ export default function Header() {
         ) : null}
       </AnimatePresence>
 
-      {isLoginOpen && (
-        <LoginPage isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      {state.isLoginOpen && (
+        <LoginPage
+          isOpen={state.isLoginOpen}
+          onClose={() => dispatch({ type: "TOGGLE_LOGIN" })}
+        />
       )}
     </header>
   );

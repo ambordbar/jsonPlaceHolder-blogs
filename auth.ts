@@ -65,6 +65,6 @@ export const {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 5 * 60,
+    maxAge: 24 * 60 * 60,
   },
 });

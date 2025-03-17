@@ -7,7 +7,7 @@ import {
 
 export async function handleSignIn() {
   await nextAuthSignIn("auth0", {
-    callbackUrl: "/dashboard",
+    callbackUrl: "/",
     redirect: true,
   });
 }

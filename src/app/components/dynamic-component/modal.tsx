@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import close from "../../../../public/svg/close.svg";
 import Image from "next/image";
 
-
 interface ModalProps {
   isOpen: boolean;
   formName: string;
