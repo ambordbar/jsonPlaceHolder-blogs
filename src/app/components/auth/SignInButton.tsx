@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { handleSignIn, handleSignOut } from "@/app/action/auth";
+import { handleSignIn, handleSignOut } from "@/app/action/auth/auth";
 import { useSession } from "next-auth/react";
 import AuthLoader from "./AuthLoader";
 import Image from "next/image";

@@ -1,5 +1,5 @@
 "use server";
-import { fetchPostsAndUsers } from "@/app/action/post";
+import { fetchPostsAndUsers } from "@/app/action/post/post";
 import fs from "fs/promises";
 import path from "path";
 

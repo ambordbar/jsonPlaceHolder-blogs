@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import Menu from "../../../../public/svg/menu.svg";
 import LoginPage from "./login";
 import { useSession } from "next-auth/react";
-import { handleSignOut } from "../../action/auth";
+import { handleSignOut } from "../../action/auth/auth";
 import Loader from "../ui/loader";
 
 type HeaderState = {
@@ -195,6 +195,15 @@ export default function Header() {
                     >
                       Dashboard
                     </Link>
+                    {session.user.role === "admin" && (
+                      <Link
+                        href="/admin"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-500"
+                        onClick={() => dispatch({ type: "CLOSE_ALL" })}
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
                     <form action={handleSignOut}>
                       <button
                         type="submit"
@@ -266,6 +275,16 @@ export default function Header() {
                     >
                       Dashboard
                     </Link>
+                  </li>
+                  <li onClick={() => dispatch({ type: "TOGGLE_MENU" })}>
+                    {session.user.role === "admin" && (
+                      <Link
+                        href="/admin"
+                        className="hover:text-white duration-300"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
                   </li>
                   <li onClick={() => dispatch({ type: "TOGGLE_MENU" })}>
                     <form action={handleSignOut}>

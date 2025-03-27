@@ -3,7 +3,7 @@
 import {
   signIn as nextAuthSignIn,
   signOut as nextAuthSignOut,
-} from "../../../auth";
+} from "../../../../auth";
 
 export async function handleSignIn() {
   await nextAuthSignIn("auth0", {

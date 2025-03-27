@@ -2,7 +2,10 @@
 import Modal from "../dynamic-component/modal";
 import SignInButton from "../auth/SignInButton";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { verifyCredentials } from "../../action/auth/verify-credentials";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage({
   isOpen,
@@ -11,6 +14,10 @@ export default function LoginPage({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -23,6 +30,41 @@ export default function LoginPage({
     };
   }, [isOpen]);
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      const result = await verifyCredentials(email, password);
+
+      if (!result.success) {
+        setError(result.error || "Login failed");
+      } else {
+        const signInResult = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
+
+        if (signInResult?.error) {
+          setError(signInResult.error);
+        } else {
+          onClose();
+          router.push(result.redirect || "/dashboard");
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An error occurred during login");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="z-50">
       <Modal isOpen={isOpen} formName="" onClose={onClose}>
@@ -31,7 +73,13 @@ export default function LoginPage({
             Sign in to your account
           </h1>
 
-          <div className="space-y-4 md:space-y-6">
+          {error && (
+            <div className="p-4 text-sm text-red-800 rounded-lg bg-red-50">
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="email"
@@ -89,9 +137,10 @@ export default function LoginPage({
             </div>
             <button
               type="submit"
-              className="w-full text-white bg-pink-500 hover:bg-customCyen focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-300"
+              disabled={isLoading}
+              className="w-full text-white bg-pink-500 hover:bg-customCyen focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-300 disabled:opacity-50"
             >
-              Sign in
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
 
             <div className="relative">
@@ -104,21 +153,20 @@ export default function LoginPage({
                 </span>
               </div>
             </div>
-
-            <div className="mt-6">
-              <SignInButton />
-            </div>
-
-            <p className="text-sm font-light text-gray-500">
-              Dont have an account yet?{" "}
-              <Link
-                href="#"
-                className="font-medium text-pink-500 hover:underline"
-              >
-                Sign up
-              </Link>
-            </p>
+          </form>
+          <div className="mt-6">
+            <SignInButton />
           </div>
+
+          <p className="text-sm font-light text-gray-500">
+            Dont have an account yet?{" "}
+            <Link
+              href="#"
+              className="font-medium text-pink-500 hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
         </div>
       </Modal>
     </div>

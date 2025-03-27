@@ -1,0 +1,14 @@
+// Server Component
+import { redirect } from "next/navigation";
+import { auth } from "../../../auth";
+import AdminDashboardClient from "./AdminDashboardClient";
+
+export default async function AdminDashboardPage() {
+  const session = await auth();
+  // console.log(session);
+  if (!session) {
+    return redirect("/login");
+  }
+
+  return <AdminDashboardClient session={session} />;
+}

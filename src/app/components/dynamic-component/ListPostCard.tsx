@@ -1,5 +1,5 @@
 import Card from "./productCard";
-import { fetchPostsAndUsers } from "@/app/action/post";
+import { fetchPostsAndUsers } from "@/app/action/post/post";
 
 interface ListPostCardProps {
   numberOfPosts?: number;

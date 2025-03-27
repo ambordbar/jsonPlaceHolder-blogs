@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { fetchSinglePostData } from "@/app/action/singlePost";
+import { fetchSinglePostData } from "@/app/action/post/singlePost";
 
 interface Params {
   id: string;

@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react";
 import Buttons from "@/app/components/dynamic-component/buttons";
 import Modal from "@/app/components/dynamic-component/modal";
-import { createPost } from "../action/createPost";
-import { deletePost } from "../action/deletePost";
+import { createPost } from "../action/post/createPost";
+import { deletePost } from "../action/post/deletePost";
 import { useRouter } from "next/navigation";
-import { saveJasonPost } from "../action/saveJasonData";
-import { updateJasonPost } from "../action/updateJasonData";
+import { saveJasonPost } from "../action/post/saveJasonData";
+import { updateJasonPost } from "../action/post/updateJasonData";
 import { Session } from "next-auth";
-import { fetchPostsAndUsers } from "@/app/action/post";
+import { fetchPostsAndUsers } from "@/app/action/post/post";
 import Loader from "@/app/components/ui/loader";
 import DeleteIcon from "../../../public/svg/delete.svg";
 import Image from "next/image";

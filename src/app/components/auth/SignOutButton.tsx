@@ -1,6 +1,6 @@
 "use client";
 
-import { handleSignOut } from "../../action/auth";
+import { handleSignOut } from "../../action/auth/auth";
 import Link from "next/link";
 
 export default function SignOutButton({ email }: { email: string }) {
