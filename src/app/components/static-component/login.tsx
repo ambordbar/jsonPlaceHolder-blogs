@@ -4,7 +4,6 @@ import SignInButton from "../auth/SignInButton";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { verifyCredentials } from "../../action/auth/verify-credentials";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage({
@@ -39,23 +38,18 @@ export default function LoginPage({
       const formData = new FormData(e.currentTarget);
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
-      const result = await verifyCredentials(email, password);
 
-      if (!result.success) {
-        setError(result.error || "Login failed");
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(result.error);
       } else {
-        const signInResult = await signIn("credentials", {
-          email,
-          password,
-          redirect: false,
-        });
-
-        if (signInResult?.error) {
-          setError(signInResult.error);
-        } else {
-          onClose();
-          router.push(result.redirect || "/dashboard");
-        }
+        onClose();
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error("Login error:", error);

@@ -7,6 +7,13 @@ import { promises as fs } from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
 
+type User = {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+};
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -44,7 +51,7 @@ export const config = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -67,12 +74,8 @@ export const config = {
             return null;
           }
 
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          };
+          const { password: _, ...userWithoutPassword } = user;
+          return userWithoutPassword as User;
         } catch (error) {
           console.error("Error in authorize:", error);
           return null;

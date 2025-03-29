@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { verifyCredentials } from "../action/auth/verify-credentials";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
@@ -32,22 +31,16 @@ export default function LoginPage() {
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
 
-      const result = await verifyCredentials(email, password);
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-      if (!result.success) {
-        setError(result.error || "Login failed");
+      if (result?.error) {
+        setError(result.error);
       } else {
-        const signInResult = await signIn("credentials", {
-          email,
-          password,
-          redirect: false,
-        });
-
-        if (signInResult?.error) {
-          setError(signInResult.error);
-        } else {
-          router.push(result.redirect || "/dashboard");
-        }
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error("Login error:", error);
