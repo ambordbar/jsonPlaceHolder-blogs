@@ -5,7 +5,6 @@ import AdminDashboardClient from "./AdminDashboardClient";
 
 export default async function AdminDashboardPage() {
   const session = await auth();
-  // console.log(session);
   if (!session) {
     return redirect("/login");
   }

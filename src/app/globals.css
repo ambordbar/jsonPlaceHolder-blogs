@@ -4,18 +4,9 @@
 
 
 :root {
-  /* --background: #ffffff;
-  --foreground: #171717; */
   --background: #08091B;
   --foreground: #ffffff;
 }
-/* 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #08091B;
-    --foreground: #ffffff;
-  }
-} */
 
 body {
   color: var(--foreground);

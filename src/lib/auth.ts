@@ -57,15 +57,18 @@ export const config = {
         }
 
         try {
+          // Read users from JSON file
           const filePath = path.join(process.cwd(), "localData", "users.json");
           const fileContents = await fs.readFile(filePath, "utf8");
           const users = JSON.parse(fileContents);
 
+          // Find user by email
           const user = users.find((u: any) => u.email === credentials.email);
           if (!user) {
             return null;
           }
 
+          // Verify password
           const isValid = await bcrypt.compare(
             credentials.password as string,
             user.password
@@ -74,6 +77,7 @@ export const config = {
             return null;
           }
 
+          // Return user data without password
           const { password: _, ...userWithoutPassword } = user;
           return userWithoutPassword as User;
         } catch (error) {
