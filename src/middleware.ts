@@ -1,7 +1,6 @@
 import { auth } from "../auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { UserRole } from "./types/roles";
 
 export default auth(async function middleware(request: NextRequest) {
   const session = await auth();
