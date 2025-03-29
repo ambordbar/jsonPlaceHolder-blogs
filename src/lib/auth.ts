@@ -6,6 +6,7 @@ import { Session } from "next-auth";
 import { promises as fs } from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
+import { User as AdapterUser } from "next-auth";
 
 type User = {
   id: string;
@@ -63,7 +64,7 @@ export const config = {
           const users = JSON.parse(fileContents);
 
           // Find user by email
-          const user = users.find((u: any) => u.email === credentials.email);
+          const user = users.find((u: User) => u.email === credentials.email);
           if (!user) {
             return null;
           }
@@ -78,7 +79,7 @@ export const config = {
           }
 
           // Return user data without password
-          const { password: _, ...userWithoutPassword } = user;
+          const { ...userWithoutPassword } = user;
           return userWithoutPassword as User;
         } catch (error) {
           console.error("Error in authorize:", error);
@@ -92,8 +93,14 @@ export const config = {
     error: "/auth/error",
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user: any }) {
-      if (user) {
+    async jwt({
+      token,
+      user,
+    }: {
+      token: JWT;
+      user: User | AdapterUser | null;
+    }) {
+      if (user && "role" in user) {
         token.role = user.role;
         token.id = user.id;
       }

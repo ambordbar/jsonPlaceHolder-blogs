@@ -1,6 +1,6 @@
 // Server Component
 import { redirect } from "next/navigation";
-import { auth } from "../../../auth";
+import { auth } from "../../lib/auth";
 import DashboardClient from "./DashboardClient";
 
 export default async function DashboardPage() {
