@@ -1,9 +1,16 @@
 [
   {
-    "id": 5,
+    "id": 1,
     "name": "admin",
     "email": "admin@gmail.com",
     "password": "$2b$10$DqyAqNPZ8t/vyUflStV7peIveOvuzPNmejxeHNOKgtpWDSXw2crCa",
     "role": "admin"
+  },
+  {
+    "id": 2,
+    "name": "test",
+    "email": "test@gmail.com",
+    "password": "$2b$10$gY47zRbO9wQYDuTG48HPYOZGePbJXWLqkb.ri7lEgjofhMONp4be2",
+    "role": "user"
   }
 ]
