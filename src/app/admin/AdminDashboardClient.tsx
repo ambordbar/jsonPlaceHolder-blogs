@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import Buttons from "@/app/components/dynamic-component/buttons";
-import Modal from "@/app/components/dynamic-component/modal";
 import { addUser } from "../action/user/addUser";
 import { deleteUser } from "../action/user/deleteUser";
 import { updateUser } from "../action/user/updateUser";
@@ -10,6 +9,15 @@ import getUsers from "@/app/action/user/user";
 import Loader from "@/app/components/ui/loader";
 import DeleteIcon from "../../../public/svg/delete.svg";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const Modal = dynamic(
+  () => import("@/app/components/dynamic-component/modal"),
+  {
+    loading: () => <Loader />,
+    ssr: false,
+  }
+);
 
 interface User {
   id: number;
@@ -35,12 +43,31 @@ export default function DashboardClient({ session }: DashboardClientProps) {
   const [userData, setUserData] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
-  const [editFormData, setEditFormData] = useState({
+  const [addFormData, setAddFormData] = useState<{
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+  }>({
     name: "",
     email: "",
     password: "",
     role: "",
-    showPassword: false,
+  });
+  const [editFormData, setEditFormData] = useState<{
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+  }>({
+    name: "",
+    email: "",
+    password: "",
+    role: "",
+  });
+  const [validationErrors, setValidationErrors] = useState({
+    addForm: { email: "", password: "" },
+    editForm: { email: "", password: "" },
   });
 
   useEffect(() => {
@@ -65,7 +92,37 @@ export default function DashboardClient({ session }: DashboardClientProps) {
     loadUserPosts();
   }, [session.user?.name]);
 
+  const validateForm = (
+    email: string,
+    password: string,
+    formType: "addForm" | "editForm"
+  ) => {
+    const errors = {
+      email: "",
+      password: "",
+    };
+
+    if (!email.endsWith("@gmail.com")) {
+      errors.email = "Email must end with @gmail.com";
+    }
+
+    if (password.length < 8) {
+      errors.password = "Password must be at least 8 characters long";
+    }
+
+    setValidationErrors((prev) => ({
+      ...prev,
+      [formType]: errors,
+    }));
+
+    return !errors.email && !errors.password;
+  };
+
   const handleAddUser = async (data: Record<string, string>) => {
+    if (!validateForm(data.email, data.password, "addForm")) {
+      return;
+    }
+
     try {
       const response = await addUser({
         name: data.name,
@@ -113,20 +170,24 @@ export default function DashboardClient({ session }: DashboardClientProps) {
 
   const handleEditUser = async (
     userId: number,
-    data: Record<string, string>
+    data: {
+      name: string;
+      email: string;
+      password: string;
+      role: string;
+    }
   ) => {
+    if (!validateForm(data.email, data.password, "editForm")) {
+      return;
+    }
+
     try {
       if (!userId) {
         alert("Please select a user to edit");
         return;
       }
 
-      const response = await updateUser(userId, {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        role: data.role,
-      });
+      const response = await updateUser(userId, data);
 
       if (response.success && response.user) {
         setUserData((prev) =>
@@ -227,53 +288,65 @@ export default function DashboardClient({ session }: DashboardClientProps) {
           formName="Add User"
           onClose={() => setShowAdd(false)}
         >
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              const data: Record<string, string> = {
-                name: formData.get("name") as string,
-                email: formData.get("email") as string,
-                password: formData.get("password") as string,
-                role: formData.get("role") as string,
-              };
-              handleAddUser(data);
-            }}
-          >
-            <div className="space-y-4">
+          <div className="flex flex-col gap-4">
+            <input
+              type="text"
+              placeholder="Name..."
+              className="p-2 rounded-lg border border-gray-300"
+              onChange={(e) =>
+                setAddFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
+            />
+            <div>
               <input
-                name="name"
-                type="text"
-                placeholder="Name..."
-                className="w-full p-2 border rounded"
-              />
-              <input
-                name="email"
                 type="email"
                 placeholder="Email..."
-                className="w-full p-2 border rounded"
+                className="p-2 rounded-lg border border-gray-300 w-full"
+                onChange={(e) =>
+                  setAddFormData((prev) => ({ ...prev, email: e.target.value }))
+                }
               />
+              {validationErrors.addForm.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {validationErrors.addForm.email}
+                </p>
+              )}
+            </div>
+            <div>
               <input
-                name="password"
                 type="password"
                 placeholder="Password..."
-                className="w-full p-2 border rounded"
+                className="p-2 rounded-lg border border-gray-300 w-full"
+                onChange={(e) =>
+                  setAddFormData((prev) => ({
+                    ...prev,
+                    password: e.target.value,
+                  }))
+                }
               />
-              <select name="role" className="w-full p-2 border rounded">
-                <option disabled value="">
-                  Select the user role....
-                </option>
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button
-                type="submit"
-                className="w-full font-semibold bg-green-500 text-white p-2 rounded hover:bg-green-700 duration-300"
-              >
-                Submit
-              </button>
+              {validationErrors.addForm.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {validationErrors.addForm.password}
+                </p>
+              )}
             </div>
-          </form>
+            <select
+              className="p-2 rounded-lg border border-gray-300"
+              onChange={(e) =>
+                setAddFormData((prev) => ({ ...prev, role: e.target.value }))
+              }
+              required
+            >
+              <option value="">Select Role</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+            <Buttons
+              className="bg-green-500 text-white p-2 rounded-lg hover:bg-green-600"
+              label="Submit"
+              onClick={() => handleAddUser(addFormData)}
+            />
+          </div>
         </Modal>
 
         <Modal
@@ -350,85 +423,25 @@ export default function DashboardClient({ session }: DashboardClientProps) {
               email: "",
               password: "",
               role: "",
-              showPassword: false,
             });
           }}
         >
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const selectedId = parseInt(selectedUserId);
-              if (selectedId) {
-                handleEditUser(selectedId, {
-                  name: editFormData.name,
-                  email: editFormData.email,
-                  password: editFormData.password,
-                  role: editFormData.role,
-                });
+          <div className="flex flex-col gap-4">
+            <input
+              type="text"
+              placeholder="Name..."
+              value={editFormData.name}
+              className="p-2 rounded-lg border border-gray-300"
+              onChange={(e) =>
+                setEditFormData((prev) => ({ ...prev, name: e.target.value }))
               }
-            }}
-          >
-            <div className="space-y-4">
-              <select
-                name="userToEdit"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                value={selectedUserId}
-                onChange={(e) => {
-                  setSelectedUserId(e.target.value);
-                  const selectedUser = userData.find(
-                    (user) => user.id === parseInt(e.target.value)
-                  );
-                  if (selectedUser) {
-                    setEditFormData({
-                      name: selectedUser.name,
-                      email: selectedUser.email,
-                      password: selectedUser.password,
-                      role: selectedUser.role,
-                      showPassword: false,
-                    });
-                  }
-                }}
-                style={{
-                  backgroundColor: "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                <option value="">Select a user to edit...</option>
-                {userData.map((user) => (
-                  <option
-                    key={user.id}
-                    value={user.id}
-                    className="hover:bg-gray-100"
-                  >
-                    {user.name} ({user.email})
-                  </option>
-                ))}
-              </select>
-              {userData.length === 0 && (
-                <p className="text-center text-gray-500">No users found.</p>
-              )}
-
+            />
+            <div>
               <input
-                name="name"
-                type="text"
-                placeholder="Name..."
-                className="w-full p-2 border rounded"
-                disabled={!selectedUserId}
-                value={editFormData.name}
-                onChange={(e) =>
-                  setEditFormData((prev) => ({
-                    ...prev,
-                    name: e.target.value,
-                  }))
-                }
-              />
-              <input
-                name="email"
                 type="email"
                 placeholder="Email..."
-                className="w-full p-2 border rounded"
-                disabled={!selectedUserId}
                 value={editFormData.email}
+                className="p-2 rounded-lg border border-gray-300 w-full"
                 onChange={(e) =>
                   setEditFormData((prev) => ({
                     ...prev,
@@ -436,92 +449,51 @@ export default function DashboardClient({ session }: DashboardClientProps) {
                   }))
                 }
               />
-              <div className="relative">
-                <input
-                  name="password"
-                  type={editFormData.showPassword ? "text" : "password"}
-                  placeholder="Password..."
-                  className="w-full p-2 border rounded"
-                  disabled={!selectedUserId}
-                  value={editFormData.password}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      password: e.target.value,
-                    }))
-                  }
-                />
-                <button
-                  type="button"
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
-                  onClick={() =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      showPassword: !prev.showPassword,
-                    }))
-                  }
-                >
-                  {editFormData.showPassword ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className={`w-5 h-5`}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                      />
-                    </svg>
-                  )}
-                </button>
-              </div>
-              <select
-                name="role"
-                className="w-full p-2 border rounded"
-                disabled={!selectedUserId}
-                value={editFormData.role}
+              {validationErrors.editForm.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {validationErrors.editForm.email}
+                </p>
+              )}
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Password..."
+                value={editFormData.password}
+                className="p-2 rounded-lg border border-gray-300 w-full"
                 onChange={(e) =>
                   setEditFormData((prev) => ({
                     ...prev,
-                    role: e.target.value,
+                    password: e.target.value,
                   }))
                 }
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
+              />
+              {validationErrors.editForm.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {validationErrors.editForm.password}
+                </p>
+              )}
             </div>
-            <button
-              type="submit"
-              className="w-full mt-4 font-semibold bg-yellow-500 text-white p-2 rounded hover:bg-yellow-700 duration-500"
+            <select
+              value={editFormData.role}
+              className="p-2 rounded-lg border border-gray-300"
+              onChange={(e) =>
+                setEditFormData((prev) => ({ ...prev, role: e.target.value }))
+              }
+              required
             >
-              Update User
-            </button>
-          </form>
+              <option value="">Select Role</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+            <Buttons
+              className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
+              label="Update"
+              onClick={() =>
+                handleEditUser(Number(selectedUserId), editFormData)
+              }
+            />
+          </div>
         </Modal>
       </div>
     </div>

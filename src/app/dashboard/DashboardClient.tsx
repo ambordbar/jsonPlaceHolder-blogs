@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import Buttons from "@/app/components/dynamic-component/buttons";
-import Modal from "@/app/components/dynamic-component/modal";
 import { createPost } from "../action/post/createPost";
 import { deletePost } from "../action/post/deletePost";
 import { useRouter } from "next/navigation";
@@ -12,6 +11,15 @@ import { fetchPostsAndUsers } from "@/app/action/post/post";
 import Loader from "@/app/components/ui/loader";
 import DeleteIcon from "../../../public/svg/delete.svg";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const Modal = dynamic(
+  () => import("@/app/components/dynamic-component/modal"),
+  {
+    loading: () => <Loader />,
+    ssr: false,
+  }
+);
 
 interface Post {
   id: number;

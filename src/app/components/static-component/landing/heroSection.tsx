@@ -1,5 +1,4 @@
 "use client";
-import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Buttons from "../../dynamic-component/buttons";
 import Image from "next/image";
@@ -52,24 +51,14 @@ export default function HeroSection() {
             />
           </div>
         </div>
-        <motion.div
-          className="mx-auto hidden lg:block xl:block"
-          animate={{
-            y: [0, -10, 0],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
+        <div className="mx-auto hidden lg:block xl:block animate-wave translate">
           <Image
             src={heroSectionImage}
             height={400}
             alt="hero section"
             className="w-full h-auto"
           />
-        </motion.div>
+        </div>
       </div>
     </div>
   );

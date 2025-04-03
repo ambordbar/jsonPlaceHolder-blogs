@@ -18,19 +18,18 @@ export async function addUser(data: {
   password: string;
   role: string;
 }) {
+  let users: User[] = [];
   try {
+    console.log("Adding user:", data);
     const filePath = path.join(process.cwd(), "localData", "users.json");
-    let users: User[] = [];
 
     try {
       const fileContent = await fs.readFile(filePath, "utf-8");
       users = JSON.parse(fileContent);
     } catch {
-      // File doesn't exist or is empty, start with empty array
       users = [];
     }
 
-    // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
@@ -44,11 +43,11 @@ export async function addUser(data: {
       password: hashedPassword,
       role: data.role,
     };
-
+    console.log("newUser", newUser);
     users.push(newUser);
-
+    console.log("users", users);
+    console.log("users written to file");
     await fs.writeFile(filePath, JSON.stringify(users, null, 2));
-
     return { success: true, user: newUser };
   } catch (error) {
     console.error("Error adding user:", error);

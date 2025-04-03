@@ -14,6 +14,10 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({
+    email: "",
+    password: "",
+  });
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -21,16 +25,40 @@ export default function LoginPage() {
     }
   }, [status, router]);
 
+  const validateForm = (email: string, password: string) => {
+    const errors = {
+      email: "",
+      password: "",
+    };
+
+    if (!email.endsWith("@gmail.com")) {
+      errors.email = "Email must end with @gmail.com";
+    }
+
+    if (password.length < 8) {
+      errors.password = "Password must be at least 8 characters long";
+    }
+
+    setValidationErrors(errors);
+    return !errors.email && !errors.password;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    setValidationErrors({ email: "", password: "" });
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    if (!validateForm(email, password)) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
-
       const result = await signIn("credentials", {
         email,
         password,
@@ -97,9 +125,14 @@ export default function LoginPage() {
                 name="email"
                 id="email"
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-2.5"
-                placeholder="name@company.com"
+                placeholder="name@gmail.com"
                 required
               />
+              {validationErrors.email && (
+                <p className="mt-1 text-sm text-red-600">
+                  {validationErrors.email}
+                </p>
+              )}
             </div>
             <div>
               <label
@@ -116,6 +149,11 @@ export default function LoginPage() {
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-2.5"
                 required
               />
+              {validationErrors.password && (
+                <p className="mt-1 text-sm text-red-600">
+                  {validationErrors.password}
+                </p>
+              )}
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-start">

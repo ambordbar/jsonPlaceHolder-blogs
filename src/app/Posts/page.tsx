@@ -3,7 +3,7 @@ import ListPost from "@/app/components/dynamic-component/ListPostCard";
 export default async function listPost() {
   return (
     <div>
-      <ListPost />
+      <ListPost numberOfPosts={20} />
     </div>
   );
 }

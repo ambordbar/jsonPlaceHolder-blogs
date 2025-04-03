@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { fetchSinglePostData } from "@/app/action/post/singlePost";
+import { Metadata } from "next";
 
 interface Params {
   id: string;
@@ -7,6 +8,37 @@ interface Params {
 
 interface PageProps {
   params: Promise<Params>;
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const post = await fetchSinglePostData(Number(id));
+
+  if (!post) {
+    return {
+      title: "Post Not Found",
+      description: "The requested post could not be found.",
+    };
+  }
+
+  return {
+    title: post.title,
+    description: post.body.substring(0, 160),
+    openGraph: {
+      title: post.title,
+      description: post.body.substring(0, 160),
+      type: "article",
+      authors: post.authorName ? [post.authorName] : [],
+      publishedTime: new Date().toISOString(),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.body.substring(0, 160),
+    },
+  };
 }
 
 export default async function SinglePostPage({ params }: PageProps) {

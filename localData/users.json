@@ -3,14 +3,14 @@
     "id": 1,
     "name": "admin",
     "email": "admin@gmail.com",
-    "password": "$2b$10$DqyAqNPZ8t/vyUflStV7peIveOvuzPNmejxeHNOKgtpWDSXw2crCa",
+    "password": "$2b$10$gawIHL3wSAYuTHMr9Cp20erxMQRDLxwCS7Chqe0QsJfnTW7OYpL5W",
     "role": "admin"
   },
   {
     "id": 2,
     "name": "test",
     "email": "test@gmail.com",
-    "password": "$2b$10$gY47zRbO9wQYDuTG48HPYOZGePbJXWLqkb.ri7lEgjofhMONp4be2",
+    "password": "$2b$10$idPxlLQihjAVQ3n7bzOujO1n81J.op1.AZMCCh34rsmewQD5qg0Pm",
     "role": "user"
   }
 ]

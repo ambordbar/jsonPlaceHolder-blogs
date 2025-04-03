@@ -119,6 +119,7 @@ export const config = {
     strategy: "jwt" as const,
     maxAge: 24 * 60 * 60,
   },
+  trustHost: true,
 };
 
 export const {
